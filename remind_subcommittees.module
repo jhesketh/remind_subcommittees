@@ -1,5 +1,37 @@
 <?php
 
+function remind_subcommittees_mail($key, &$message, $subcommittee) {
+    $CC_to = "josh@opentechnologysolutions.com.au";
+    $message['headers']['CC'] = $CC_to;
+
+    switch($key) {
+        case 'remind':
+            $message['subject'] = t('Subcommittee report for !subcommittee is due.', array('!subcommittee' => $subcommittee->title);
+            $message['body'][] = t("Hi there,
+            
+            Your !period report for !subcommittee subcommittee is due on the !duedate.
+            
+            Please go to !reporturl and enter your report.
+            
+            Thanks,
+            The Linux Australia Council
+            ", array('!period' => $period, '!reporturl' => $url, '!duedate' => $date));
+        break;
+        case 'overdue':
+            $message['subject'] = t('Subcommittee report for !subcommittee is due.', array('!subcommittee' => $subcommittee->title);
+            $message['body'][] = t("Hi there,
+            
+            Your !period report for !subcommittee subcommittee is due on the !duedate.
+            
+            Please go to !reporturl and enter your report.
+            
+            Thanks,
+            The Linux Australia Council
+            ", array('!period' => $period, '!reporturl' => $url, '!duedate' => $date));
+        break;
+    }
+}
+
 function remind_subcommittees_menu() {
     $items = array();
    
@@ -33,7 +65,6 @@ function remind_subcommittees_check() {
         $report_period = $time_values[$subcommittee->field_reporting_period[0]['value']];
         $last_reminder = strtotime($subcommittee->field_subcommittee_last_reminder[0]['value']);
         $due_time = strtotime($subcommittee->field_next_report_date[0]['value']);
-        print ( $subcommittee->title . '; last reminder: ' . date('Y-m-d', $last_reminder) . '; due: ' . date('Y-m-d', $due_time) . '; last report created: ' . date('Y-m-d', $last_report->created));
 
         if ( $subcommittee->field_subcommittee_status[0]['value'] == 'Active subcommittee' ) {
             if ( $last_report->created >= $due_time ) {
@@ -61,18 +92,15 @@ function remind_subcommittees_check() {
 }
 
 function remind_subcommittees_overdue($subcommittee) {
-    $message = "remind overdue!!!";
-    remind_subcommittees_send_email($subcommittee, $message);
+    remind_subcommittees_send_email($subcommittee, 'overdue');
 }
 
-function remind_subcommittees_send_email($subcommittee, $message = null) {
-    if ( $message == null ) {
-        // set default reminder email
-        $message = "remind";
-    }
+function remind_subcommittees_send_email($subcommittee, $key = 'remind') {
     $subcommittee->field_subcommittee_last_reminder[0]['value'] = date('Y-m-d', time()) . 'T00:00:00';
     node_save($subcommittee);
-    print $message;
+    $alert_to = $subcommittee->field_subcommittee_contact[0]['value'];
+    $alert_to = 'josh@nitrotech.org';
+    drupal_mail('remind_subcommittees', $key, $alter_to, user_preferred_language($account), $subcommittee);
 }
 
 ?>
