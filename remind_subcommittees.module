@@ -31,31 +31,33 @@ function remind_subcommittees_check() {
         $query2 = db_query("SELECT * FROM {content_type_report}, {node} WHERE content_type_report.field_report_references_nid = %d AND content_type_report.nid = node.nid ORDER BY node.created DESC LIMIT 1", $row->nid);
         $last_report = db_fetch_object($query2);
         $report_period = $time_values[$subcommittee->field_reporting_period[0]['value']];
-        print_r($last_report);
-        print_r($subcommittee);
-        
+
         if ( $subcommittee->field_subcommittee_status[0]['value'] == 'Active subcommittee' ) {
             if ( strtotime($subcommittee->field_next_report_date[0]['value']) < time() ) {
                 $last_reminder = strtotime($subcommittee->field_subcommittee_last_reminder[0]['value']);
                 $due_time = strtotime($subcommittee->field_next_report_date[0]['value']);
                 if ( $last_report->created >= $due_time ) {
                     // report already submitted... Automatically update the due date of the next one
+                    $subcommittee->field_next_report_date[0]['value'] = date('Y-m-d', $due_time + $report_period) + 'T00:00:00';
+                    print_r($subcommittee);
                 }
                 else {
-                    if ( ($due_time - time()) < (60*60*24*7) ) {
+                    if ( ($due_time - time()) <= (60*60*24*7) ) {
                         // within 7 days of due
-                        if ( $last_reminder < ($due_time - (60*60*24*7)) ) {
+                        if ( ($due_time - $last_reminder) <= (60*60*24*7) ) {
                             // haven't already been reminded, so send one
                             remind_subcommittees_send_email($subcommittee);
                         }
                     }
                     
                     $overdue_email = false;
-                    if ( $last_reminder <  ) {
-                        remind_subcommittees_overdue($subcommittee); // The report has just become due
-                    }
-                    else if ( (time() - strtotime($subcommittee->field_subcommittee_last_reminder[0]['value'])) > (60*60*24*3) )
-                        remind_subcommittees_overdue($subcommittee); // send a reminder every 3 days
+                    if ( time > $due_time ) {
+                        if ( $last_reminder < $due_time ) {
+                            remind_subcommittees_overdue($subcommittee); // The report has just become due
+                        }
+                        else if ( (time() - $last_reminder) > (60*60*24*3) )
+                            remind_subcommittees_overdue($subcommittee); // send a reminder every 3 days
+                        }
                     }
                 }
             }
@@ -64,16 +66,16 @@ function remind_subcommittees_check() {
 }
 
 function remind_subcommittees_overdue($subcommittee) {
-    $message = "";
+    $message = "remind overdue!!!";
     remind_subcommittees_send_email($subcommittee, $message);
 }
 
 function remind_subcommittees_send_email($subcommittee, $message = null) {
     if ( $message == null ) {
         // set default reminder email
-        $message ="";
+        $message = "remind";
     }
-    
+    print $message;
 }
 
 ?>
