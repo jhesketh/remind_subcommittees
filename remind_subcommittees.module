@@ -31,6 +31,8 @@ function remind_subcommittees_check() {
         $query2 = db_query("SELECT * FROM {content_type_report}, {node} WHERE content_type_report.field_report_references_nid = %d AND content_type_report.nid = node.nid ORDER BY node.created DESC LIMIT 1", $row->nid);
         $last_report = db_fetch_object($query2);
         print_r($last_report);
+        print_r($subcommittee);
+        print_r($items);
         //if ( $time_values[$subcommittee->field_reporting_period] > ($last_report->created - time()) ) {
         //    return true;
         //}    
