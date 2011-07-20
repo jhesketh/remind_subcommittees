@@ -70,6 +70,8 @@ function remind_subcommittees_send_email($subcommittee, $message = null) {
         // set default reminder email
         $message = "remind";
     }
+    $subcommittee->field_subcommittee_last_reminder[0]['value'] = date('Y-m-d', time()) . 'T00:00:00';
+    node_save($subcommittee);
     print $message;
 }
 
