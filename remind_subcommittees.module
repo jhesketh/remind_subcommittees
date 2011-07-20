@@ -31,14 +31,15 @@ function remind_subcommittees_check() {
         $query2 = db_query("SELECT * FROM {content_type_report}, {node} WHERE content_type_report.field_report_references_nid = %d AND content_type_report.nid = node.nid ORDER BY node.created DESC LIMIT 1", $row->nid);
         $last_report = db_fetch_object($query2);
         $report_period = $time_values[$subcommittee->field_reporting_period[0]['value']];
+        $last_reminder = strtotime($subcommittee->field_subcommittee_last_reminder[0]['value']);
+        $due_time = strtotime($subcommittee->field_next_report_date[0]['value']);
+        print ( $subcommittee->title . ' ' . date('Y-m-d', $last_report) . ' ' date('Y-m-d', $due_time) );
 
         if ( $subcommittee->field_subcommittee_status[0]['value'] == 'Active subcommittee' ) {
             if ( strtotime($subcommittee->field_next_report_date[0]['value']) < time() ) {
-                $last_reminder = strtotime($subcommittee->field_subcommittee_last_reminder[0]['value']);
-                $due_time = strtotime($subcommittee->field_next_report_date[0]['value']);
                 if ( $last_report->created >= $due_time ) {
                     // report already submitted... Automatically update the due date of the next one
-                    $subcommittee->field_next_report_date[0]['value'] = date('Y-m-d', $due_time + $report_period) + 'T00:00:00';
+                    $subcommittee->field_next_report_date[0]['value'] = date('Y-m-d', $due_time + $report_period) . 'T00:00:00';
                     print_r($subcommittee);
                 }
                 else {
