@@ -55,7 +55,7 @@ function remind_subcommittees_check() {
                         if ( $last_reminder < $due_time ) {
                             remind_subcommittees_overdue($subcommittee); // The report has just become due
                         }
-                        else if ( (time() - $last_reminder) > (60*60*24*3) )
+                        else if ( (time() - $last_reminder) > (60*60*24*3) ) {
                             remind_subcommittees_overdue($subcommittee); // send a reminder every 3 days
                         }
                     }
