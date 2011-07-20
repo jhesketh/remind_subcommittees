@@ -1,0 +1,41 @@
+<?php
+
+function remind_subcommittees_menu() {
+    $items = array();
+   
+    //Link to the test_module admin page:
+    $items['remind_subcommittees'] = array(
+        'title' => 'Remind Subcommittees',
+        'page callback' => 'remind_subcommittees_check',
+        'type' => MENU_CALLBACK,
+    );
+   
+    return $items;
+}
+
+function remind_subcommittees_check() {
+    $time_values = array(
+        'Weekly' => 60*60*24*7,
+        'Fortnightly' => 60*60*24*14,
+        'Monthly' => 60*60*24*30,
+        'Bimonthly' => 60*60*24*60,
+        'Quarterly' => 60*60*24*91,
+        'Half Yearly' => 60*60*24*182,
+        'Annually' => 60*60*24*365,
+    );
+
+    $query = db_query("SELECT * FROM {node} WHERE type = 'subcommittee'");
+    while ( $row = db_fetch_object($query) ) {
+        $subcommittee = node_load($row->nid);
+        $query2 = db_query("SELECT * FROM {content_type_report}, {node} WHERE content_type_report.field_report_references_nid = %d AND content_type_report.nid = node.nid ORDER BY node.created DESC LIMIT 1", $row->nid);
+        $last_report = db_fetch_object($query2);
+        print_r($last_report);
+        //if ( $time_values[$subcommittee->field_reporting_period] > ($last_report->created - time()) ) {
+        //    return true;
+        //}    
+    }
+
+
+}
+
+?>

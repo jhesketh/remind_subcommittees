@@ -1,0 +1,5 @@
+name = Remind Subcommittees
+description = This module is designed specifically for Linux Australia's drupal configuration to remind sub-committee coordinators when their reports are due.
+core = 6.x
+package = " Linux Australia"
+
