@@ -8,6 +8,7 @@ function remind_subcommittees_menu() {
         'title' => 'Remind Subcommittees',
         'page callback' => 'remind_subcommittees_check',
         'type' => MENU_CALLBACK,
+        'access callback' => TRUE
     );
    
     return $items;
