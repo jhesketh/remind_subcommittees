@@ -39,7 +39,7 @@ function remind_subcommittees_check() {
             if ( $last_report->created >= $due_time ) {
                 // report already submitted... Automatically update the due date of the next one
                 $subcommittee->field_next_report_date[0]['value'] = date('Y-m-d', $due_time + $report_period) . 'T00:00:00';
-                print_r($subcommittee);
+                node_save($subcommittee);
             }
             else {
                 if ( ($due_time - time()) <= (60*60*24*7) ) {
@@ -50,7 +50,7 @@ function remind_subcommittees_check() {
                     }
                 }
                 
-                if ( time() > $due_time ) {
+                if ( time() >= $due_time ) {
                     if ( (time() - $last_reminder) > (60*60*24*3) ) {
                         remind_subcommittees_overdue($subcommittee); // send a reminder every 3 days
                     }
