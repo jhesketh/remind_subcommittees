@@ -11,23 +11,27 @@ function remind_subcommittees_mail($key, &$message, $subcommittee) {
             
             Your !period report for !subcommittee subcommittee is due on the !duedate.
             
-            Please go to !reporturl and enter your report.
+            Please go to !reporturl and enter your report. 
+            
+            Linux Australia really appreciates your ongoing efforts and commitment and help in your roles.
             
             Thanks,
             The Linux Australia Council
-            ", array('!period' => $period, '!reporturl' => $url, '!duedate' => $date));
+            ", array('!period' => $subcommittee->field_reporting_period[0]['value'], '!subcommittee' => $subcommittee->title ,'!reporturl' => url('node/add/report'), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
         break;
         case 'overdue':
-            $message['subject'] = t('Subcommittee report for !subcommittee is due.', array('!subcommittee' => $subcommittee->title);
+            $message['subject'] = t('Subcommittee report for !subcommittee is overdue.', array('!subcommittee' => $subcommittee->title);
             $message['body'][] = t("Hi there,
             
-            Your !period report for !subcommittee subcommittee is due on the !duedate.
+            Your !period report for !subcommittee subcommittee is now overdue. The report was due on the !duedate.
             
             Please go to !reporturl and enter your report.
             
+            Linux Australia really appreciates your ongoing efforts and commitment and help in your roles. If you are unable to submit your report for any reasons, please contact council@linux.org.au.
+            
             Thanks,
             The Linux Australia Council
-            ", array('!period' => $period, '!reporturl' => $url, '!duedate' => $date));
+            ", array('!period' => $subcommittee->field_reporting_period[0]['value'], '!subcommittee' => $subcommittee->title, '!reporturl' => url('node/add/report'), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
         break;
     }
 }
