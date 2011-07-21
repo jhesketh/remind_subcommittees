@@ -1,7 +1,7 @@
 <?php
 
 function remind_subcommittees_mail($key, &$message, $subcommittee) {
-    $CC_to = "josh@opentechnologysolutions.com.au";
+    $CC_to = "council@linux.org.au";
     $message['headers']['CC'] = $CC_to;
 
     switch($key) {
@@ -11,7 +11,11 @@ $message['body'][] = t("Hi there,
 
 Your !period report for the !subcommittee subcommittee is due on the !duedate.
 
-Please go to !reporturl and enter your report. 
+Please go to !reporturl and enter your report. You may enter it directly into the form, attach a copy or link to one hosted elsewhere. 
+
+Your report only needs to provide a quick update of how things are progressing for your subcommittee.
+This can be as short as some simple dot points to let the council know that things are going smoothly.
+Please follow the instructions on the submission URL.
 
 Linux Australia really appreciates your ongoing efforts and commitment and help in your roles.
 
@@ -25,7 +29,11 @@ $message['body'][] = t("Hi there,
 
 Your !period report for the !subcommittee subcommittee is now overdue. The report was due on the !duedate.
 
-Please go to !reporturl and enter your report.
+Please go to !reporturl and enter your report. You may enter it directly into the form, attach a copy or link to one hosted elsewhere.
+
+Your report only needs to provide a quick update of how things are progressing for your subcommittee.
+This can be as short as some simple dot points to let the council know that things are going smoothly.
+Please follow the instructions on the submission URL.
 
 Linux Australia really appreciates your ongoing efforts and commitment and help in your roles. If you are unable to submit your report for any reasons, please contact council@linux.org.au.
 
@@ -102,8 +110,7 @@ function remind_subcommittees_send_email($subcommittee, $key = 'remind') {
     $subcommittee->field_subcommittee_last_reminder[0]['value'] = date('Y-m-d', time()) . 'T00:00:00';
     node_save($subcommittee);
     $alert_to = $subcommittee->field_subcommittee_contact[0]['value'];
-    $alert_to = 'josh@nitrotech.org';
-    drupal_mail('remind_subcommittees', $key, $alter_to, user_preferred_language($account), $subcommittee);
+    drupal_mail('remind_subcommittees', $key, $alert_to, user_preferred_language($account), $subcommittee);
 }
 
 ?>
