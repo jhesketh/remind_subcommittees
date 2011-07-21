@@ -9,7 +9,7 @@ function remind_subcommittees_mail($key, &$message, $subcommittee) {
             $message['subject'] = t('Subcommittee report for !subcommittee is due.', array('!subcommittee' => $subcommittee->title));
             $message['body'][] = t("Hi there,
             
-            Your !period report for !subcommittee subcommittee is due on the !duedate.
+            Your !period report for the !subcommittee subcommittee is due on the !duedate.
             
             Please go to !reporturl and enter your report. 
             
@@ -17,13 +17,13 @@ function remind_subcommittees_mail($key, &$message, $subcommittee) {
             
             Thanks,
             The Linux Australia Council
-            ", array('!period' => $subcommittee->field_reporting_period[0]['value'], '!subcommittee' => $subcommittee->title ,'!reporturl' => url('node/add/report'), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
+            ", array('!period' => $subcommittee->field_reporting_period[0]['value'], '!subcommittee' => $subcommittee->title ,'!reporturl' => url('node/add/report', array('external' => true)), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
         break;
         case 'overdue':
             $message['subject'] = t('Subcommittee report for !subcommittee is overdue.', array('!subcommittee' => $subcommittee->title));
             $message['body'][] = t("Hi there,
             
-            Your !period report for !subcommittee subcommittee is now overdue. The report was due on the !duedate.
+            Your !period report for the !subcommittee subcommittee is now overdue. The report was due on the !duedate.
             
             Please go to !reporturl and enter your report.
             
@@ -31,7 +31,7 @@ function remind_subcommittees_mail($key, &$message, $subcommittee) {
             
             Thanks,
             The Linux Australia Council
-            ", array('!period' => $subcommittee->field_reporting_period[0]['value'], '!subcommittee' => $subcommittee->title, '!reporturl' => url('node/add/report'), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
+            ", array('!period' => $subcommittee->field_reporting_period[0]['value'], '!subcommittee' => $subcommittee->title, '!reporturl' => url('node/add/report', array('external' => true)), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
         break;
     }
     print_r($message);
@@ -70,18 +70,15 @@ function remind_subcommittees_check() {
         $report_period = $time_values[$subcommittee->field_reporting_period[0]['value']];
         $last_reminder = strtotime($subcommittee->field_subcommittee_last_reminder[0]['value']);
         $due_time = strtotime($subcommittee->field_next_report_date[0]['value']);
-print "test1";
         if ( $subcommittee->field_subcommittee_status[0]['value'] == 'Active subcommittee' ) {
             if ( $last_report->created >= $due_time ) {
                 // report already submitted... Automatically update the due date of the next one
                 $subcommittee->field_next_report_date[0]['value'] = date('Y-m-d', $due_time + $report_period) . 'T00:00:00';
                 node_save($subcommittee);
-                print "test2";
             }
             else {
                 if ( ($due_time - time()) <= (60*60*24*7) ) {
                     // within 7 days of due
-                    print "test3";
                     if ( ($due_time - $last_reminder) >= (60*60*24*7) ) {
                         // haven't already been reminded, so send one
                         remind_subcommittees_send_email($subcommittee);
@@ -89,7 +86,6 @@ print "test1";
                 }
                 
                 if ( time() >= $due_time ) {
-                print "test4";
                     if ( (time() - $last_reminder) > (60*60*24*3) ) {
                         remind_subcommittees_overdue($subcommittee); // send a reminder every 3 days
                     }
@@ -100,21 +96,14 @@ print "test1";
 }
 
 function remind_subcommittees_overdue($subcommittee) {
-print "test5";
     remind_subcommittees_send_email($subcommittee, 'overdue');
 }
 
 function remind_subcommittees_send_email($subcommittee, $key = 'remind') {
-print "test6";
     $subcommittee->field_subcommittee_last_reminder[0]['value'] = date('Y-m-d', time()) . 'T00:00:00';
     node_save($subcommittee);
-    print "test7";
     $alert_to = $subcommittee->field_subcommittee_contact[0]['value'];
-        print_r($alert_to);
     $alert_to = 'josh@nitrotech.org';
-    print_r($subcommittee);
-    print_r($key);
-    print_r($alert_to);
     drupal_mail('remind_subcommittees', $key, $alter_to, user_preferred_language($account), $subcommittee);
 }
 
