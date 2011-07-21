@@ -34,6 +34,7 @@ function remind_subcommittees_mail($key, &$message, $subcommittee) {
             ", array('!period' => $subcommittee->field_reporting_period[0]['value'], '!subcommittee' => $subcommittee->title, '!reporturl' => url('node/add/report'), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
         break;
     }
+    print_r($message);
 }
 
 function remind_subcommittees_menu() {
@@ -104,6 +105,9 @@ function remind_subcommittees_send_email($subcommittee, $key = 'remind') {
     node_save($subcommittee);
     $alert_to = $subcommittee->field_subcommittee_contact[0]['value'];
     $alert_to = 'josh@nitrotech.org';
+    print_r($subcommittee);
+    print_r($key);
+    print_r($alert_to);
     drupal_mail('remind_subcommittees', $key, $alter_to, user_preferred_language($account), $subcommittee);
 }
 
