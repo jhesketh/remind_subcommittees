@@ -7,34 +7,33 @@ function remind_subcommittees_mail($key, &$message, $subcommittee) {
     switch($key) {
         case 'remind':
             $message['subject'] = t('Subcommittee report for !subcommittee is due.', array('!subcommittee' => $subcommittee->title));
-            $message['body'][] = t("Hi there,
-            
-            Your !period report for the !subcommittee subcommittee is due on the !duedate.
-            
-            Please go to !reporturl and enter your report. 
-            
-            Linux Australia really appreciates your ongoing efforts and commitment and help in your roles.
-            
-            Thanks,
-            The Linux Australia Council
-            ", array('!period' => $subcommittee->field_reporting_period[0]['value'], '!subcommittee' => $subcommittee->title ,'!reporturl' => url('node/add/report', array('external' => true)), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
+$message['body'][] = t("Hi there,
+
+Your !period report for the !subcommittee subcommittee is due on the !duedate.
+
+Please go to !reporturl and enter your report. 
+
+Linux Australia really appreciates your ongoing efforts and commitment and help in your roles.
+
+Thanks,
+The Linux Australia Council
+", array('!period' => $subcommittee->field_reporting_period[0]['value'], '!subcommittee' => $subcommittee->title ,'!reporturl' => url('node/add/report', array('absolute' => true)), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
         break;
         case 'overdue':
             $message['subject'] = t('Subcommittee report for !subcommittee is overdue.', array('!subcommittee' => $subcommittee->title));
-            $message['body'][] = t("Hi there,
-            
-            Your !period report for the !subcommittee subcommittee is now overdue. The report was due on the !duedate.
-            
-            Please go to !reporturl and enter your report.
-            
-            Linux Australia really appreciates your ongoing efforts and commitment and help in your roles. If you are unable to submit your report for any reasons, please contact council@linux.org.au.
-            
-            Thanks,
-            The Linux Australia Council
-            ", array('!period' => $subcommittee->field_reporting_period[0]['value'], '!subcommittee' => $subcommittee->title, '!reporturl' => url('node/add/report', array('external' => true)), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
+$message['body'][] = t("Hi there,
+
+Your !period report for the !subcommittee subcommittee is now overdue. The report was due on the !duedate.
+
+Please go to !reporturl and enter your report.
+
+Linux Australia really appreciates your ongoing efforts and commitment and help in your roles. If you are unable to submit your report for any reasons, please contact council@linux.org.au.
+
+Thanks,
+The Linux Australia Council
+", array('!period' => $subcommittee->field_reporting_period[0]['value'], '!subcommittee' => $subcommittee->title, '!reporturl' => url('node/add/report', array('absolute' => true)), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
         break;
     }
-    print_r($message);
 }
 
 function remind_subcommittees_menu() {
