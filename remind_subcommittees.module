@@ -2,8 +2,10 @@
 
 function remind_subcommittees_mail($key, &$message, $subcommittee) {
     $CC_to = "council@linux.org.au";
-    $message['headers']['CC'] = $CC_to;
+    $from_address = "council@linux.org.au";
 
+    $message['headers']['CC'] = $CC_to;
+    $message['from'] = $from_address;
     switch($key) {
         case 'remind':
             $message['subject'] = t('Subcommittee report for !subcommittee is due.', array('!subcommittee' => $subcommittee->title));
