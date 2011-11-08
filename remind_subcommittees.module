@@ -83,9 +83,9 @@ Cheers!
  */
 function remind_subcommittees_cron() {
     // Check the last time a check was run
-    if ( (time() - variable_get('remind_subcommittees_last_check', 0)) >= REMIND_SUBCOMITTEES_CHECK_PERIOD ) {
+    if ( (time() - variable_get('remind_subcommittees_last_check', 0)) >= REMIND_SUBCOMMITTEES_CHECK_PERIOD ) {
         // Time to run another check
-        remind_subcomittees_check();
+        remind_subcommittees_check();
         variable_set('remind_subcommittees_last_check', time());
     }
 }
