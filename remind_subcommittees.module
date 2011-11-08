@@ -4,6 +4,8 @@
  * Define the period for when to check to send an email
  */
 define('REMIND_SUBCOMMITTEES_CHECK_PERIOD', (60*60*24)); // Daily
+define('REMIND_SUBCOMMITTEE_COUNCIL_ADDRESS', 'council@linux.org.au'); // Address to send from and notices to.
+
 
 /**
  * Implementation of hook_mail()
@@ -11,12 +13,14 @@ define('REMIND_SUBCOMMITTEES_CHECK_PERIOD', (60*60*24)); // Daily
  * Set the content of the reminder emails
  */
 function remind_subcommittees_mail($key, &$message, $subcommittee) {
-    $CC_to = "council@linux.org.au";
-    $from_address = "council@linux.org.au";
+    $CC_to = REMIND_SUBCOMMITTEE_COUNCIL_ADDRESS;
+    $from_address = REMIND_SUBCOMMITTEE_COUNCIL_ADDRESS;
 
     // Fix up the period
     $period = $subcommittee->field_reporting_period[0]['value'];
     $period = ( $period == 'Annually' ) ? 'Annual' : $period;
+
+    $next_report_date = date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']));
 
     $message['headers']['CC'] = $CC_to;
     $message['from'] = $from_address;
@@ -37,7 +41,7 @@ Linux Australia really appreciates your ongoing efforts and commitment and help 
 
 Thanks,
 The Linux Australia Council
-", array('!period' => $period, '!subcommittee' => $subcommittee->title ,'!reporturl' => url('node/add/report', array('absolute' => true)), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
+", array('!period' => $period, '!subcommittee' => $subcommittee->title ,'!reporturl' => url('node/add/report', array('absolute' => true)), '!duedate' => $next_report_date));
         break;
         case 'overdue':
             $message['subject'] = t('Subcommittee report for !subcommittee is overdue.', array('!subcommittee' => $subcommittee->title));
@@ -55,7 +59,19 @@ Linux Australia really appreciates your ongoing efforts and commitment and help 
 
 Thanks,
 The Linux Australia Council
-", array('!period' => $period, '!subcommittee' => $subcommittee->title, '!reporturl' => url('node/add/report', array('absolute' => true)), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
+", array('!period' => $period, '!subcommittee' => $subcommittee->title, '!reporturl' => url('node/add/report', array('absolute' => true)), '!duedate' => $next_report_date));
+        break;
+        case 'no_contact_address':
+            $message['subject'] = t('Subcommittee reminder for !subcommittee could not be sent.', array('!subcommittee' => $subcommittee->title));
+$message['body'][] = t("Hi there,
+
+Unfortunately !contact_address is not a valid email address. As such the !subcommittee subcommittee could not be reminded about their report due on !duedate.
+
+Please update the details on the linux.org.au website[0] and then send a reminder manually.
+
+Cheers!
+
+[0] !editurl", array('!subcommittee' => $subcommittee->title, '!editurl' => url('node/' . $subcommittee->nid . '/edit', array('absolute' => true)), '!duedate' => $next_report_date, '!contact_address' => $subcommittee->field_subcommittee_contact[0]['value']));
         break;
     }
 }
@@ -127,10 +143,16 @@ function remind_subcommittees_send_email($subcommittee, $key = 'remind') {
     $subcommittee->field_subcommittee_last_reminder[0]['value'] = date('Y-m-d', time()) . 'T00:00:00';
     node_save($subcommittee);
     $alert_to = $subcommittee->field_subcommittee_contact[0]['value'];
-    // Send email
-    drupal_mail('remind_subcommittees', $key, $alert_to, user_preferred_language($account), $subcommittee);
-    // Create a log re mail
-    watchdog('remind_subcommittees', 'remind_subcommittees has sent an "@key" notice to @subcommittee', array('@key' => $key, '@subcommittee' => $subcommittee->title), WATCHDOG_INFO);
+    if ( valid_email_address($alert_to) ) {
+        // Send email
+        drupal_mail('remind_subcommittees', $key, $alert_to, user_preferred_language($account), $subcommittee);
+        // Create a log re mail
+        watchdog('remind_subcommittees', 'remind_subcommittees has sent an "@key" notice to @subcommittee', array('@key' => $key, '@subcommittee' => $subcommittee->title), WATCHDOG_INFO);
+    }
+    else {
+        drupal_mail('remind_subcommittees', 'no_contact_address', REMIND_SUBCOMMITTEE_COUNCIL_ADDRESS, $subcommittee);
+        watchdog('remind_subcommittees', "remind_subcommittees couldn't email @subcommittee because they don't have a valid address.", array('@subcommittee' => $subcommittee->title), WATCHDOG_INFO);
+    }
 }
 
 ?>
