@@ -1,5 +1,15 @@
 <?php
 
+/**
+ * Define the period for when to check to send an email
+ */
+define('REMIND_SUBCOMMITTEES_CHECK_PERIOD', (60*60*24)); // Daily
+
+/**
+ * Implementation of hook_mail()
+ *
+ * Set the content of the reminder emails
+ */
 function remind_subcommittees_mail($key, &$message, $subcommittee) {
     $CC_to = "council@linux.org.au";
     $from_address = "council@linux.org.au";
@@ -46,18 +56,18 @@ The Linux Australia Council
     }
 }
 
-function remind_subcommittees_menu() {
-    $items = array();
-   
-    //Link to the test_module admin page:
-    $items['remind_subcommittees'] = array(
-        'title' => 'Remind Subcommittees',
-        'page callback' => 'remind_subcommittees_check',
-        'type' => MENU_CALLBACK,
-        'access callback' => TRUE
-    );
-   
-    return $items;
+/**
+ * Implementation of hook_cron()
+ *
+ * Do the actual work on cron run.
+ */
+function remind_subcommittees_cron() {
+    // Check the last time a check was run
+    if ( (time() - variable_get('remind_subcommittees_last_check', 0)) >= REMIND_SUBCOMITTEES_CHECK_PERIOD ) {
+        // Time to run another check
+        remind_subcomittees_check();
+        variable_set('remind_subcommittees_last_check', time());
+    }
 }
 
 function remind_subcommittees_check() {
@@ -111,7 +121,10 @@ function remind_subcommittees_send_email($subcommittee, $key = 'remind') {
     $subcommittee->field_subcommittee_last_reminder[0]['value'] = date('Y-m-d', time()) . 'T00:00:00';
     node_save($subcommittee);
     $alert_to = $subcommittee->field_subcommittee_contact[0]['value'];
-    drupal_mail('remind_subcommittees', $key, $alert_to, user_preferred_language($account), $subcommittee);
+    // Send email
+    //drupal_mail('remind_subcommittees', $key, $alert_to, user_preferred_language($account), $subcommittee);
+    // Create a log re mail
+    watchdog('remind_subcommittees', 'remind_subcommittees has sent an "@key" notice to @subcommittee', array('@key' => $key, '@subcommittee' => $subcommittee->title), WATCHDOG_INFO);
 }
 
 ?>
