@@ -14,6 +14,10 @@ function remind_subcommittees_mail($key, &$message, $subcommittee) {
     $CC_to = "council@linux.org.au";
     $from_address = "council@linux.org.au";
 
+    // Fix up the period
+    $period = $subcommittee->field_reporting_period[0]['value'];
+    $period = ( $period == 'Annually' ) ? 'Annual' : $period;
+
     $message['headers']['CC'] = $CC_to;
     $message['from'] = $from_address;
     switch($key) {
@@ -33,7 +37,7 @@ Linux Australia really appreciates your ongoing efforts and commitment and help 
 
 Thanks,
 The Linux Australia Council
-", array('!period' => $subcommittee->field_reporting_period[0]['value'], '!subcommittee' => $subcommittee->title ,'!reporturl' => url('node/add/report', array('absolute' => true)), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
+", array('!period' => $period, '!subcommittee' => $subcommittee->title ,'!reporturl' => url('node/add/report', array('absolute' => true)), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
         break;
         case 'overdue':
             $message['subject'] = t('Subcommittee report for !subcommittee is overdue.', array('!subcommittee' => $subcommittee->title));
@@ -51,7 +55,7 @@ Linux Australia really appreciates your ongoing efforts and commitment and help 
 
 Thanks,
 The Linux Australia Council
-", array('!period' => $subcommittee->field_reporting_period[0]['value'], '!subcommittee' => $subcommittee->title, '!reporturl' => url('node/add/report', array('absolute' => true)), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
+", array('!period' => $period, '!subcommittee' => $subcommittee->title, '!reporturl' => url('node/add/report', array('absolute' => true)), '!duedate' => date('Y-m-d', strtotime($subcommittee->field_next_report_date[0]['value']))));
         break;
     }
 }
