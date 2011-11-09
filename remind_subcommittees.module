@@ -142,9 +142,10 @@ function remind_subcommittees_overdue($subcommittee) {
 function remind_subcommittees_send_email($subcommittee, $key = 'remind') {
     $subcommittee->field_subcommittee_last_reminder[0]['value'] = date('Y-m-d', time()) . 'T00:00:00';
     node_save($subcommittee);
-    //$alert_to = $subcommittee->field_subcommittee_contact[0]['value'];
-$alert_to = 'josh@nitrotech.org';
+    $alert_to = $subcommittee->field_subcommittee_contact[0]['value'];
+
     if ( valid_email_address($alert_to) ) {
+$alert_to = 'josh@nitrotech.org';
         // Send email
         drupal_mail('remind_subcommittees', $key, $alert_to, user_preferred_language($account), $subcommittee);
         // Create a log re mail
