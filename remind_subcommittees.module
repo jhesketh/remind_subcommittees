@@ -4,7 +4,7 @@
  * Define the period for when to check to send an email
  */
 define('REMIND_SUBCOMMITTEES_CHECK_PERIOD', (60*60*24)); // Daily
-define('REMIND_SUBCOMMITTEE_COUNCIL_ADDRESS', 'josh@nitrotech.org'); // Address to send from and notices to.
+define('REMIND_SUBCOMMITTEE_COUNCIL_ADDRESS', 'council@linux.org.au'); // Address to send from and notices to.
 
 
 /**
@@ -145,7 +145,6 @@ function remind_subcommittees_send_email($subcommittee, $key = 'remind') {
     $alert_to = $subcommittee->field_subcommittee_contact[0]['value'];
 
     if ( valid_email_address($alert_to) ) {
-$alert_to = 'josh@nitrotech.org';
         // Send email
         drupal_mail('remind_subcommittees', $key, $alert_to, user_preferred_language($account), $subcommittee);
         // Create a log re mail
