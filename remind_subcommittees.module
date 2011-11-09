@@ -152,7 +152,7 @@ $alert_to = 'josh@nitrotech.org';
         watchdog('remind_subcommittees', 'remind_subcommittees has sent an "@key" notice to @subcommittee', array('@key' => $key, '@subcommittee' => $subcommittee->title), WATCHDOG_INFO);
     }
     else {
-        drupal_mail('remind_subcommittees', 'no_contact_address', REMIND_SUBCOMMITTEE_COUNCIL_ADDRESS, $subcommittee);
+        drupal_mail('remind_subcommittees', 'no_contact_address', REMIND_SUBCOMMITTEE_COUNCIL_ADDRESS, user_preferred_language($account), $subcommittee);
         watchdog('remind_subcommittees', "remind_subcommittees couldn't email @subcommittee because they don't have a valid address.", array('@subcommittee' => $subcommittee->title), WATCHDOG_INFO);
     }
 }
