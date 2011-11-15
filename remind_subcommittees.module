@@ -123,10 +123,10 @@ function remind_subcommittees_check() {
                         // haven't already been reminded, so send one
                         remind_subcommittees_send_email($subcommittee);
                     }
-                }
-                else if ( time() >= $due_time ) {
-                    if ( (time() - $last_reminder) > (60*60*24*3) ) {
-                        remind_subcommittees_overdue($subcommittee); // send a reminder every 3 days
+                    else if ( time() >= $due_time ) {
+                        if ( (time() - $last_reminder) > (60*60*24*3) ) {
+                            remind_subcommittees_overdue($subcommittee); // send a reminder every 3 days
+                        }
                     }
                 }
             }
