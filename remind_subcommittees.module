@@ -111,7 +111,7 @@ function remind_subcommittees_check() {
         $last_reminder = strtotime($subcommittee->field_subcommittee_last_reminder[0]['value']);
         $due_time = strtotime($subcommittee->field_next_report_date[0]['value']);
         if ( $subcommittee->field_subcommittee_status[0]['value'] == 'Active subcommittee' ) {
-            if ( $last_report->created >= $due_time ) {
+            if ( $last_report->created >= ($due_time - (60*60*24*7)) ) { // created within 7 days of being due
                 // report already submitted... Automatically update the due date of the next one
                 $subcommittee->field_next_report_date[0]['value'] = date('Y-m-d', $due_time + $report_period) . 'T00:00:00';
                 node_save($subcommittee);
